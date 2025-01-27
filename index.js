@@ -3,6 +3,10 @@ import pkg from 'whatsapp-web.js';
 const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal'
 
+
+const MIN_TIME = 60000;//1 minuto en ms
+const MAX_RAND_TIME = 600000; //10 minutos en ms
+
 const randomWords = JSON.parse(fs.readFileSync('randomWords.json', 'utf8'));
 
 let clientsData = [];
@@ -77,7 +81,7 @@ async function startMessageExchange() {
             }
 
             // Esperar un intervalo aleatorio antes de pasar al siguiente cliente
-            const interval = Math.random() * 5000 + 1000; // Entre 1 y 6 segundos
+            const interval = Math.random() * MAX_RAND_TIME + MIN_TIME;
             await new Promise(resolve => setTimeout(resolve, interval));
 
         }
@@ -109,6 +113,3 @@ process.on('exit', async () => {
     console.log('Saliendo del programa. Finalizando sesiones...');
     await logoutAllClients();
 });
-
-// Llamar a la función para inicializar
-initializeClients(2).catch(console.error);
