@@ -35,25 +35,16 @@ async function initializeClients(clientCount, mainWindow, hoursSending, minTime 
             const phoneNumber = client.info.wid.user;
 
             // Se envian los datos que se pueden serializar
-            const clientData = {
-                phoneNumber,
-                isReady: true,
-            };
+            const clientData = { phoneNumber, isReady: true, };
 
-            clientsData.push({
-                client,
-                phoneNumber,
-                isReady: true,
-            });
+            clientsData.push({ client, phoneNumber, isReady: true, });
 
             // Enviamos datos serializables al renderer
             mainWindow.webContents.send('ready', { clientData });
         });
 
         client.initialize();
-        await new Promise((resolve) =>
-            client.on('ready', resolve)
-        );
+        await new Promise(resolve => client.on('ready', resolve));
     }
 
     startMessageExchange(minTime, maxRandTime, hoursSending);
@@ -64,7 +55,9 @@ function getRandomRecipient(senderPhoneNumber) {
     const potentialRecipients = clientsData.filter(
         (recipient) => recipient.phoneNumber !== senderPhoneNumber && recipient.isReady
     );
+
     if (potentialRecipients.length === 0) return null;
+
     return potentialRecipients[Math.floor(Math.random() * potentialRecipients.length)];
 }
 
@@ -115,9 +108,7 @@ async function logoutAllClients() {
 }
 
 function getSendUntilDate(hours) {
-    const currentTime = Date.now();
-    const newTime = currentTime + (hours * 60 * 60 * 1000);
-    return new Date(newTime);
+    return new Date(Date.now() + (hours * 60 * 60 * 1000)); // Se le suma las horas dadas
 }
 
 module.exports = {
