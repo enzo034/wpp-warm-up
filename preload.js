@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('electronAPI', {
 
-    initializeClients: (clientCount) => ipcRenderer.invoke('initialize-clients', clientCount),
+    initializeClients: (clientCount, hoursSending, minTime, maxRandTime) => ipcRenderer.invoke('initialize-clients', clientCount, hoursSending, minTime, maxRandTime),
 
     onQRGenerated: (callback) => ipcRenderer.on('qr', callback),
 

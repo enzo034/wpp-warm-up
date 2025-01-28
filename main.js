@@ -6,8 +6,8 @@ let mainWindow;
 
 const createWindow = () => {
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1200,
+        height: 900,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
@@ -15,15 +15,18 @@ const createWindow = () => {
         },
     })
 
-    mainWindow.loadFile('index.html')
+    mainWindow.loadFile('./public/index.html')
 }
 
 app.whenReady().then(() => {
     createWindow()
 
-    ipcMain.handle('initialize-clients', async (event, clientCount) => {
-        await initializeClients(clientCount, mainWindow);
-        return 'Clientes inicializados';
+    ipcMain.handle('initialize-clients', async (event, clientCount, minTime, maxRandTime) => {
+        const initClients = await initializeClients(clientCount, mainWindow, minTime, maxRandTime);
+
+        if(!initClients) return 'Los clientes no fueron inicializados, revise los parametros de inicio.'
+
+        return 'Clientes inicializados, el envio de mensajes va a comenzar';
     });
 
     ipcMain.handle('logout-clients', async () => {

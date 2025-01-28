@@ -3,13 +3,14 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const path = require('path');
 
-const MIN_TIME = 60000; // 1 minuto en ms
-const MAX_RAND_TIME = 600000; // 10 minutos en ms
 const randomWords = JSON.parse(fs.readFileSync('randomWords.json', 'utf8'));
 
 let clientsData = [];
 
-async function initializeClients(clientCount, mainWindow) {
+async function initializeClients(clientCount, mainWindow, hoursSending, minTime = 60, maxRandTime = 600) {
+
+    if (clientCount <= 0 || isNaN(clientCount)) return false;
+
     for (let i = 0; i < clientCount; i++) {
         const client = new Client({
             authStrategy: new LocalAuth({
@@ -54,8 +55,9 @@ async function initializeClients(clientCount, mainWindow) {
             client.on('ready', resolve)
         );
     }
-    console.log('Todos los clientes están inicializados.');
-    startMessageExchange();
+
+    startMessageExchange(minTime, maxRandTime, hoursSending);
+    return true;
 }
 
 function getRandomRecipient(senderPhoneNumber) {
@@ -66,29 +68,31 @@ function getRandomRecipient(senderPhoneNumber) {
     return potentialRecipients[Math.floor(Math.random() * potentialRecipients.length)];
 }
 
-async function startMessageExchange() {
+async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending) { //En segundos
+
+    const sendUntil = getSendUntilDate(hoursSending);
+
     while (true) {
         for (const sender of clientsData) {
+
+            if (Date.now() > sendUntil.getTime()) return 'Sending messages was completed'
+
             if (!sender.isReady) continue;
+
             const recipient = getRandomRecipient(sender.phoneNumber);
+
             if (recipient) {
-                const randomWord =
-                    randomWords.phrases[
-                    Math.floor(Math.random() * randomWords.phrases.length)
-                    ];
+
+                const randomWord = randomWords.phrases[Math.floor(Math.random() * randomWords.phrases.length)];
+
                 try {
-                    await sender.client.sendMessage(
-                        `${recipient.phoneNumber}@c.us`,
-                        randomWord
-                    );
-                    console.log(
-                        `Mensaje enviado de ${sender.phoneNumber} a ${recipient.phoneNumber}: ${randomWord}`
-                    );
+                    await sender.client.sendMessage(`${recipient.phoneNumber}@c.us`, randomWord);
+                    console.log(`Mensaje enviado de ${sender.phoneNumber} a ${recipient.phoneNumber}: ${randomWord}`);
                 } catch (error) {
                     console.error('Error al enviar el mensaje', error);
                 }
             }
-            const interval = Math.random() * MAX_RAND_TIME + MIN_TIME;
+            const interval = Math.random() * MAX_RAND_TIME * 1000 + MIN_TIME * 1000;
             await new Promise((resolve) => setTimeout(resolve, interval));
         }
     }
@@ -108,6 +112,12 @@ async function logoutAllClients() {
     await fs.promises.rm(path.join(__dirname, '.wwebjs_cache'), { recursive: true, force: true });
 
     console.log('Todas las sesiones han sido cerradas.');
+}
+
+function getSendUntilDate(hours) {
+    const currentTime = Date.now();
+    const newTime = currentTime + (hours * 60 * 60 * 1000);
+    return new Date(newTime);
 }
 
 module.exports = {

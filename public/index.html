@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data:;" />
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data:;" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./styles/style.css">
+  <title>WhatsApp Client Manager</title>
+</head>
+
+<body>
+  <div class="navbar">
+    <a href="#" data-page="home">Home</a>
+  </div>
+
+  <main>
+    <h1>Whatsapp Client Manager</h1>
+
+    <div class="form-container">
+      <button id="start-clients">Iniciar Clientes</button>
+
+      <div class="inputs-container">
+        <div class="input-group">
+          <label for="client-count">Cantidad de clientes</label>
+          <input type="number" id="client-count" placeholder="No default" />
+        </div>
+        <div class="input-group">
+          <label for="min-delay">Mínimo en el intervalo</label>
+          <input type="number" id="min-delay" placeholder="Default : 60 seconds" />
+        </div>
+        <div class="input-group">
+          <label for="max-delay">Máximo en el intervalo</label>
+          <input type="number" id="max-delay" placeholder="Default : 600 seconds" />
+        </div>
+        <div class="input-group">
+          <label for="hours-sending">Cantidad de horas a enviar</label>
+          <input type="number" id="hours-sending" placeholder="No default" />
+        </div>
+      </div>
+    </div>
+
+    <div id="qr-container"></div>
+
+    <button id="logout-clients">Cerrar Sesiones</button>
+  </main>
+
+  <!-- Contenedor de estados (número de teléfono y estado) -->
+  <aside id="status-container">
+    <h2>Clientes Conectados</h2>
+    <div id="status-list"></div>
+  </aside>
+
+  <script src="./scripts/renderer.js"></script>
+</body>
+
+
+</html>
