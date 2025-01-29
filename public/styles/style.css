@@ -9,15 +9,18 @@ body {
     margin: 0;
     display: flex;
     font-family: Arial, sans-serif;
-    background-color: #ecf0f1; /* Fondo claro */
-    color: #2c3e50; /* Texto oscuro */
+    background-color: #ecf0f1;
+    /* Fondo claro */
+    color: #2c3e50;
+    /* Texto oscuro */
 }
 
 /* Estilo para la barra de navegación */
 .navbar {
     width: 100px;
     height: 100vh;
-    background-color: #222b33; /* Fondo oscuro */
+    background-color: #222b33;
+    /* Fondo oscuro */
     color: white;
     display: flex;
     flex-direction: column;
@@ -41,7 +44,8 @@ body {
 
 .navbar a:hover {
     background-color: #34495e;
-    color: #f1c40f; /* Cambia el color del texto al pasar */
+    color: #f1c40f;
+    /* Cambia el color del texto al pasar */
 }
 
 /* Contenedor principal para el contenido dinámico */
@@ -58,7 +62,8 @@ h1 {
 
 /* Botones y inputs */
 button {
-    background-color: #3498db; /* Azul brillante */
+    background-color: #3498db;
+    /* Azul brillante */
     color: white;
     border: none;
     padding: 10px 15px;
@@ -70,7 +75,8 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9; /* Azul más oscuro */
+    background-color: #2980b9;
+    /* Azul más oscuro */
 }
 
 input {
@@ -92,9 +98,9 @@ input:focus {
 #qr-container {
     margin-top: 20px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: flex-start;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
 }
 
 #qr-container img {
@@ -109,7 +115,8 @@ input:focus {
 .form-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    width: 30%;
     gap: 10px;
 }
 
@@ -126,11 +133,13 @@ input:focus {
     position: absolute;
     bottom: 20px;
     right: 300px;
-    background-color: #e74c3c; /* Rojo */
+    background-color: #e74c3c;
+    /* Rojo */
 }
 
 #logout-clients:hover {
-    background-color: #c0392b; /* Rojo más oscuro */
+    background-color: #c0392b;
+    /* Rojo más oscuro */
 }
 
 /* Contenedor de estados de clientes */
@@ -189,15 +198,15 @@ input:focus {
     display: flex;
     flex-direction: column;
     gap: 5px;
-  }
-  
-  label {
+}
+
+label {
     font-size: 1rem;
     color: #2c3e50;
     font-weight: bold;
-  }
-  
-  input {
+}
+
+input {
     padding: 10px;
     font-size: 1rem;
     margin: 10px 0;
@@ -206,9 +215,109 @@ input:focus {
     border-radius: 5px;
     outline: none;
     transition: border-color 0.3s ease;
-  }
-  
-  input:focus {
+}
+
+input:focus {
     border-color: #3498db;
-  }
-  
+}
+
+
+.qr-wrapper {
+    display: flex;
+    flex-direction: column;
+    /* Alinea texto e imagen en columna */
+    align-items: center;
+    /* Centra horizontalmente */
+    justify-content: center;
+    /* Centra verticalmente */
+    margin: 40px 0;
+    /* Espaciado entre los QR */
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    max-width: 90%;
+}
+
+.qr-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.qr-wrapper img {
+    width: 200px;
+    /* Ajusta el tamaño de la imagen QR */
+    height: auto;
+    border-radius: 5px;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    margin: auto;
+    position: relative;
+}
+
+.loader:before {
+    content: '';
+    width: 48px;
+    height: 5px;
+    background: #000;
+    opacity: 0.25;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    border-radius: 50%;
+    animation: shadow 0.5s linear infinite;
+}
+
+.loader:after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: #629c4b;
+    animation: bxSpin 0.5s linear infinite;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 4px;
+}
+
+@keyframes bxSpin {
+    17% {
+        border-bottom-right-radius: 3px;
+    }
+
+    25% {
+        transform: translateY(9px) rotate(22.5deg);
+    }
+
+    50% {
+        transform: translateY(18px) scale(1, .9) rotate(45deg);
+        border-bottom-right-radius: 40px;
+    }
+
+    75% {
+        transform: translateY(9px) rotate(67.5deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(90deg);
+    }
+}
+
+@keyframes shadow {
+
+    0%,
+    100% {
+        transform: scale(1, 1);
+    }
+
+    50% {
+        transform: scale(1.2, 1);
+    }
+}
