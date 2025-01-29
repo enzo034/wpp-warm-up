@@ -2,6 +2,7 @@ const fs = require('fs');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const path = require('path');
+const { checkContact, updateMessages } = require('./data/database.js')
 
 const randomWords = JSON.parse(fs.readFileSync('randomWords.json', 'utf8'));
 let clientsData = [];
@@ -34,18 +35,18 @@ async function initializeClients(clientCount, mainWindow, hoursSending, minTime 
             });
         });
 
-        client.on('ready', () => {
+        client.on('ready', async () => {
             console.log(`Cliente ${i + 1} listo.`);
 
             const phoneNumber = client.info.wid.user;
 
-            // Se envian los datos que se pueden serializar
             const clientData = { phoneNumber, isReady: true, };
 
             clientsData.push({ client, phoneNumber, isReady: true, });
 
-            // Enviamos datos serializables al renderer
-            mainWindow.webContents.send('ready', { clientData });
+            const contact = await checkContact(phoneNumber);
+
+            mainWindow.webContents.send('ready', { clientData, contact });
         });
 
         client.initialize();
@@ -82,13 +83,19 @@ async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending, mainW
 
             const recipient = getRandomRecipient(sender.phoneNumber);
 
+            
             if (recipient) {
-
+                
+                const senderNumber = sender.phoneNumber;
+                const receiverNumber = recipient.phoneNumber;
+                
                 const randomWord = randomWords.phrases[Math.floor(Math.random() * randomWords.phrases.length)];
 
                 try {
-                    await sender.client.sendMessage(`${recipient.phoneNumber}@c.us`, randomWord);
-                    console.log(`Mensaje enviado de ${sender.phoneNumber} a ${recipient.phoneNumber}: ${randomWord}`);
+                    await sender.client.sendMessage(`${receiverNumber}@c.us`, randomWord);
+                    await updateMessages(senderNumber, receiverNumber);
+                    mainWindow.webContents.send('onSendingMessage', { senderNumber, receiverNumber });
+                    console.log(`Mensaje enviado de ${senderNumber} a ${receiverNumber}: ${randomWord}`);
                 } catch (error) {
                     console.error('Error al enviar el mensaje', error);
                 }
