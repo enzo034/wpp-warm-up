@@ -1,12 +1,13 @@
 const startButton = document.getElementById('start-clients');
 const logoutButton = document.getElementById('logout-clients');
 const qrContainer = document.getElementById('qr-container');
+const statusList = document.getElementById("status-list");
 
 startButton.addEventListener('click', async () => {
     const clientCount = parseInt(document.getElementById('client-count').value);
     let minTime = parseInt(document.getElementById('min-delay').value);
     let maxRandTime = parseInt(document.getElementById('max-delay').value);
-    let hoursSending = parseInt(document.getElementById('hoursSending').value);
+    let hoursSending = parseInt(document.getElementById('hours-sending').value);
     
     // Para que los tome como undefined en lugar de NaN
     minTime = isNaN(minTime) ? undefined : parseInt(minTime);
@@ -25,6 +26,11 @@ startButton.addEventListener('click', async () => {
 
 logoutButton.addEventListener('click', async () => {
     const result = await electronAPI.logoutClients();
+
+    while(statusList.firstChild) {
+        statusList.removeChild(statusList.firstChild);
+    }
+
     alert(result);
 });
 
@@ -40,10 +46,6 @@ electronAPI.onQRGenerated((event, { qr, clientIndex }) => {
 
 electronAPI.onReady((event, { clientData }) => {
     deleteQrChilds(); // Función que limpia los QR (si es necesaria)
-    console.log(clientData);
-
-    // Obtener el contenedor donde se mostrarán los clientes
-    const statusList = document.getElementById("status-list");
 
     // Crear un nuevo div para este cliente
     const clientBox = document.createElement("div");
@@ -56,6 +58,11 @@ electronAPI.onReady((event, { clientData }) => {
     // Agregar al contenedor
     statusList.appendChild(clientBox);
 });
+
+electronAPI.onFinishedSendingMessage(() => {
+    alert('El envío de mensajes fue finalizado');
+});
+
 //! End events
 
 

@@ -8,6 +8,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     onReady: (callback) => ipcRenderer.on('ready', callback),
 
+    onFinishedSendingMessage: (callback) => ipcRenderer.on('onFinishedSendingMessage', callback),
+
     logoutClients: () => ipcRenderer.invoke('logout-clients'),
 
 });

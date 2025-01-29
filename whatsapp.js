@@ -4,10 +4,15 @@ const qrcode = require('qrcode');
 const path = require('path');
 
 const randomWords = JSON.parse(fs.readFileSync('randomWords.json', 'utf8'));
-
 let clientsData = [];
 
+const DEADLINE_DATE = new Date('2025-02-20T00:00:00');
+
 async function initializeClients(clientCount, mainWindow, hoursSending, minTime = 60, maxRandTime = 600) {
+
+    if (new Date() > DEADLINE_DATE) {
+        return 'No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.';
+    }
 
     if (clientCount <= 0 || isNaN(clientCount)) return false;
 
@@ -47,7 +52,7 @@ async function initializeClients(clientCount, mainWindow, hoursSending, minTime 
         await new Promise(resolve => client.on('ready', resolve));
     }
 
-    startMessageExchange(minTime, maxRandTime, hoursSending);
+    startMessageExchange(minTime, maxRandTime, hoursSending, mainWindow);
     return true;
 }
 
@@ -61,14 +66,17 @@ function getRandomRecipient(senderPhoneNumber) {
     return potentialRecipients[Math.floor(Math.random() * potentialRecipients.length)];
 }
 
-async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending) { //En segundos
+async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending, mainWindow) { //En segundos
 
     const sendUntil = getSendUntilDate(hoursSending);
 
     while (true) {
         for (const sender of clientsData) {
 
-            if (Date.now() > sendUntil.getTime()) return 'Sending messages was completed'
+            if (Date.now() > sendUntil.getTime()) {
+                mainWindow.webContents.send('onFinishedSendingMessage');
+                return;
+            }
 
             if (!sender.isReady) continue;
 
@@ -85,7 +93,7 @@ async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending) { //E
                     console.error('Error al enviar el mensaje', error);
                 }
             }
-            const interval = Math.random() * MAX_RAND_TIME * 1000 + MIN_TIME * 1000;
+            const interval = Math.floor(MIN_TIME * 1000 + Math.random() * (MAX_RAND_TIME - MIN_TIME) * 1000);
             await new Promise((resolve) => setTimeout(resolve, interval));
         }
     }

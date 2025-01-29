@@ -16,6 +16,7 @@
     "whatsapp-web.js": "^1.26.0"
   },
   "devDependencies": {
-    "electron": "^34.0.1"
+    "electron": "^34.0.1",
+    "electron-builder": "^25.1.8"
   }
 }

@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('node:path')
-const {initializeClients, logoutAllClients} = require('./whatsapp.js')
+const { initializeClients, logoutAllClients } = require('./whatsapp.js')
 
 let mainWindow;
 
@@ -21,10 +21,11 @@ const createWindow = () => {
 app.whenReady().then(() => {
     createWindow()
 
-    ipcMain.handle('initialize-clients', async (event, clientCount, minTime, maxRandTime) => {
-        const initClients = await initializeClients(clientCount, mainWindow, minTime, maxRandTime);
+    ipcMain.handle('initialize-clients', async (event, clientCount, hoursSending, minTime, maxRandTime) => {
+        const initClients = await initializeClients(clientCount, mainWindow, hoursSending, minTime, maxRandTime);
 
-        if(!initClients) return 'Los clientes no fueron inicializados, revise los parametros de inicio.'
+        if (!initClients) return 'Los clientes no fueron inicializados, revise los parametros de inicio.'
+        if(typeof(initClients) === 'string') return initClients;
 
         return 'Clientes inicializados, el envio de mensajes va a comenzar';
     });
@@ -39,6 +40,7 @@ app.whenReady().then(() => {
     })
 })
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
+    await logoutAllClients();
     if (process.platform !== 'darwin') app.quit()
 })
