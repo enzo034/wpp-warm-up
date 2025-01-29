@@ -1,0 +1,323 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    font-family: Arial, sans-serif;
+    background-color: #ecf0f1;
+    /* Fondo claro */
+    color: #2c3e50;
+    /* Texto oscuro */
+}
+
+/* Estilo para la barra de navegación */
+.navbar {
+    width: 100px;
+    height: 100vh;
+    background-color: #222b33;
+    /* Fondo oscuro */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    border-right: 2px solid #34495e;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.navbar a:hover {
+    background-color: #34495e;
+    color: #f1c40f;
+    /* Cambia el color del texto al pasar */
+}
+
+/* Contenedor principal para el contenido dinámico */
+main {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Título principal */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Botones y inputs */
+button {
+    background-color: #3498db;
+    /* Azul brillante */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+}
+
+button:hover {
+    background-color: #2980b9;
+    /* Azul más oscuro */
+}
+
+input {
+    padding: 10px;
+    font-size: 1rem;
+    margin: 10px 0;
+    width: 200px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    border-color: #3498db;
+}
+
+/* QR container */
+#qr-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+}
+
+#qr-container img {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+}
+
+/* Posicionamiento del contenedor de formulario */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    gap: 10px;
+}
+
+/* Posicionamiento de los inputs debajo del botón "Iniciar Clientes" */
+.inputs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+/* Alineación del botón "Cerrar Sesiones" en la parte inferior derecha */
+#logout-clients {
+    position: absolute;
+    bottom: 20px;
+    right: 300px;
+    background-color: #e74c3c;
+    /* Rojo */
+}
+
+#logout-clients:hover {
+    background-color: #c0392b;
+    /* Rojo más oscuro */
+}
+
+/* Contenedor de estados de clientes */
+#status-container {
+    width: 250px;
+    height: 100vh;
+    background-color: #f8f9fa;
+    border-left: 2px solid #bdc3c7;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#status-container h2 {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+#status-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+/* Estilo de cada cliente */
+.client-box {
+    background-color: white;
+    border: 1px solid #bdc3c7;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+/* Estado conectado/desconectado */
+.client-box.ready {
+    border-color: #2ecc71;
+    color: #27ae60;
+}
+
+.client-box.not-ready {
+    border-color: #e74c3c;
+    color: #c0392b;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label {
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+input {
+    padding: 10px;
+    font-size: 1rem;
+    margin: 10px 0;
+    width: 200px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    border-color: #3498db;
+}
+
+
+.qr-wrapper {
+    display: flex;
+    flex-direction: column;
+    /* Alinea texto e imagen en columna */
+    align-items: center;
+    /* Centra horizontalmente */
+    justify-content: center;
+    /* Centra verticalmente */
+    margin: 40px 0;
+    /* Espaciado entre los QR */
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+    max-width: 90%;
+}
+
+.qr-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.qr-wrapper img {
+    width: 200px;
+    /* Ajusta el tamaño de la imagen QR */
+    height: auto;
+    border-radius: 5px;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    margin: auto;
+    position: relative;
+}
+
+.loader:before {
+    content: '';
+    width: 48px;
+    height: 5px;
+    background: #000;
+    opacity: 0.25;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    border-radius: 50%;
+    animation: shadow 0.5s linear infinite;
+}
+
+.loader:after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: #629c4b;
+    animation: bxSpin 0.5s linear infinite;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 4px;
+}
+
+@keyframes bxSpin {
+    17% {
+        border-bottom-right-radius: 3px;
+    }
+
+    25% {
+        transform: translateY(9px) rotate(22.5deg);
+    }
+
+    50% {
+        transform: translateY(18px) scale(1, .9) rotate(45deg);
+        border-bottom-right-radius: 40px;
+    }
+
+    75% {
+        transform: translateY(9px) rotate(67.5deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(90deg);
+    }
+}
+
+@keyframes shadow {
+
+    0%,
+    100% {
+        transform: scale(1, 1);
+    }
+
+    50% {
+        transform: scale(1.2, 1);
+    }
+}

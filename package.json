@@ -1,18 +1,23 @@
 {
   "name": "wpp-warm-up",
   "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "electron ."
   },
   "keywords": [],
-  "author": "",
+  "author": "ODP",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "lokijs": "^1.5.12",
+    "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.26.0"
+  },
+  "devDependencies": {
+    "electron": "^34.0.1",
+    "electron-builder": "^25.1.8"
   }
 }
