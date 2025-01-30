@@ -1,17 +1,21 @@
 {
   "name": "wpp-warm-up",
+  "productName": "Wpp-C-M",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
   "keywords": [],
   "author": "ODP",
   "license": "ISC",
-  "description": "",
+  "description": "Whatsapp client manager",
   "dependencies": {
     "lokijs": "^1.5.12",
+    "puppeteer": "^24.1.1",
     "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.26.0"
@@ -19,5 +23,14 @@
   "devDependencies": {
     "electron": "^34.0.1",
     "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.ODP.WhatsappClientManager",
+    "files": [
+      "**/*",
+      "node_modules/whatsapp-web.js/**/*",
+      "node_modules/puppeteer/**/*",
+      "!database.json"
+    ]
   }
 }
