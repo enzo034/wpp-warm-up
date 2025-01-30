@@ -3,6 +3,14 @@ const logoutButton = document.getElementById('logout-clients');
 const qrContainer = document.getElementById('qr-container');
 const statusList = document.getElementById("status-list");
 
+window.alert = function(str) {
+    window.electronAPI.showAlert(str).then(() => {
+        if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) {
+            document.activeElement.focus();
+        }
+    });
+};
+
 startButton.addEventListener('click', async () => {
     const clientCount = parseInt(document.getElementById('client-count').value);
     let minTime = parseInt(document.getElementById('min-delay').value);

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path')
 const { initializeClients, logoutAllClients } = require('./whatsapp.js')
 
@@ -6,8 +6,8 @@ let mainWindow;
 
 const createWindow = () => {
     mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 900,
+        width: 1400,
+        height: 1100,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
@@ -25,7 +25,7 @@ app.whenReady().then(() => {
         const initClients = await initializeClients(clientCount, mainWindow, hoursSending, minTime, maxRandTime);
 
         if (!initClients) return 'Los clientes no fueron inicializados, revise los parametros de inicio.'
-        if(typeof(initClients) === 'string') return initClients;
+        if (typeof (initClients) === 'string') return initClients;
 
         return 'Clientes inicializados, el envio de mensajes va a comenzar';
     });
@@ -33,6 +33,18 @@ app.whenReady().then(() => {
     ipcMain.handle('logout-clients', async () => {
         await logoutAllClients();
         return 'Sesiones cerradas';
+    });
+
+    ipcMain.handle('custom-alert', async (event, message) => {
+        const win = BrowserWindow.getFocusedWindow();
+        await dialog.showMessageBox(win, {
+            type: 'warning',
+            buttons: ["Ok"],
+            defaultId: 0,
+            cancelId: 0,
+            detail: message,
+            message: ''
+        });
     });
 
     app.on('activate', () => {

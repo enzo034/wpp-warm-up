@@ -14,4 +14,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     logoutClients: () => ipcRenderer.invoke('logout-clients'),
 
+    showAlert: (message) => ipcRenderer.invoke('custom-alert', message)
+
 });

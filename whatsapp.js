@@ -5,6 +5,7 @@ const path = require('path');
 const { checkContact, updateMessages } = require('./data/database.js')
 const puppeteer = require('puppeteer')
 
+
 const logStream = fs.createWriteStream('app.log', { flags: 'a' }); // Abre el archivo en modo append
 
 // Redirigir console.log a un archivo
@@ -56,16 +57,16 @@ async function initializeClients(clientCount, mainWindow, hoursSending, minTime 
         if (new Date() > DEADLINE_DATE) {
             return 'No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.';
         }
-    
+
         if (clientCount <= 0 || isNaN(clientCount)) return false;
-    
+
         for (let i = 0; i < clientCount; i++) {
             const client = new Client({
                 authStrategy: new LocalAuth({
                     clientId: `client-${i}`,
                 }),
                 puppeteer: {
-                    executablePath: puppeteer.executablePath()
+                    executablePath: puppeteer.executablePath(),
                 }
             });
             console.log("Client created");
@@ -74,15 +75,15 @@ async function initializeClients(clientCount, mainWindow, hoursSending, minTime 
                 const err = await handleQrEvent(qr, i, mainWindow);
                 if (err) return `An error has occurred. ${err}`
             });
-    
+
             client.on('ready', async () => {
                 await handleReadyEvent(client, mainWindow)
             });
-    
+
             client.initialize();
             await new Promise(resolve => client.on('ready', resolve));
         }
-    
+
         startMessageExchange(minTime, maxRandTime, hoursSending, mainWindow);
         return true;
     } catch (error) {
