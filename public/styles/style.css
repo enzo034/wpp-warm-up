@@ -183,6 +183,8 @@ input:focus {
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
+    max-height: calc(100vh - 60px); 
+    padding-right: 5px;
 }
 
 /* Estilo de cada cliente */

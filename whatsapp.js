@@ -3,53 +3,21 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const path = require('path');
 const { checkContact, updateMessages } = require('./data/database.js')
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer');
+const { randomWordsFromJs } = require('./randomWords.js');
 
 
-const logStream = fs.createWriteStream('app.log', { flags: 'a' }); // Abre el archivo en modo append
+const logStream = fs.createWriteStream('app.log', { flags: 'a' });
 
-// Redirigir console.log a un archivo
 console.log = function (message) {
     logStream.write(new Date().toISOString() + ' - ' + message + '\n');
 };
 
 
-const randomWords = {
-    phrases: [
-        "Hola, ¿cómo estás?",
-        "¡Buenos días!",
-        "¿Qué tal tu día?",
-        "Espero que tengas una excelente semana.",
-        "Nos vemos pronto.",
-        "¡Qué interesante!",
-        "Estoy aquí si necesitas algo.",
-        "¿A qué hora nos conectamos?",
-        "No olvides revisar los mensajes.",
-        "Gracias por tu ayuda.",
-        "¡Qué sorpresa!",
-        "Cuéntame más sobre eso.",
-        "¿Qué opinas de esto?",
-        "Me parece una buena idea.",
-        "¡Eso es genial!",
-        "¿Te gustaría hacer algo hoy?",
-        "Estoy de acuerdo contigo.",
-        "¡Nos mantenemos en contacto!",
-        "¿Ya viste las noticias?",
-        "¡Disfruta tu día!",
-        "Es un día perfecto para empezar algo nuevo.",
-        "Confío en que todo saldrá bien.",
-        "Recuerda tomar un descanso.",
-        "Hablemos pronto.",
-        "¡Hola! ¿Cómo te va?",
-        "¿Todo bien por allá?",
-        "Oye, ¿has visto esta película?",
-        "Me alegra saber que estás bien.",
-        "¡Te mando un abrazo!",
-    ]
-}
+const randomWords = randomWordsFromJs
 let clientsData = [];
 
-const DEADLINE_DATE = new Date('2025-02-20T00:00:00');
+const DEADLINE_DATE = new Date('2025-02-25T00:00:00');
 
 async function initializeClients(clientCount, mainWindow, hoursSending, minTime = 60, maxRandTime = 600) {
 
