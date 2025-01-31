@@ -118,6 +118,19 @@ input:focus {
     align-items: center;
     width: 30%;
     gap: 10px;
+    position: relative;
+}
+
+#add-client {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#start-clients {
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 /* Posicionamiento de los inputs debajo del botón "Iniciar Clientes" */
@@ -125,7 +138,7 @@ input:focus {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 25px;
+    margin-top: 60px;
 }
 
 /* Alineación del botón "Cerrar Sesiones" en la parte inferior derecha */
@@ -321,3 +334,23 @@ input:focus {
         transform: scale(1.2, 1);
     }
 }
+
+.client-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.logout-btn:hover {
+    color: darkred;
+    /* transform: scale(1.1); */
+}
+

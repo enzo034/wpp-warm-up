@@ -1,4 +1,5 @@
 const startButton = document.getElementById('start-clients');
+const addClientButton = document.getElementById('add-client');
 const logoutButton = document.getElementById('logout-clients');
 const qrContainer = document.getElementById('qr-container');
 const statusList = document.getElementById("status-list");
@@ -37,6 +38,10 @@ startButton.addEventListener('click', async () => {
     alert(result);
 });
 
+addClientButton.addEventListener('click', async () => {
+    const result = await electronAPI.addSingleClient();
+    alert(result);
+})
 
 logoutButton.addEventListener('click', async () => {
     const result = await electronAPI.logoutClients();
@@ -78,14 +83,16 @@ electronAPI.onReady((event, { clientData, contact }) => {
         const date = new Date(dateString);
         return date.toLocaleString("es-ES", { timeZoneName: "short" });
     };
-    
 
     const clientBox = document.createElement("div");
     clientBox.classList.add("client-box");
     clientBox.classList.add(clientData.isReady ? "ready" : "not-ready");
 
     clientBox.innerHTML = `
-        <strong>${clientData.phoneNumber} - ${clientData.isReady ? "Conectado" : "Desconectado"}</strong><br>
+        <div class="client-header">
+            <strong>${clientData.phoneNumber} - ${clientData.isReady ? "Conectado" : "Desconectado"}</strong>
+            <button class="logout-btn" data-phone="${clientData.phoneNumber}">❌</button>
+        </div>
         <small>📅 Primer escaneo: ${formatDate(contact.firstScan)}</small><br>
         <small>⏳ Último escaneo: ${formatDate(contact.lastScan)}</small><br>
         <small>✉️ Mensajes enviados: ${contact.messagesSent}</small><br>
@@ -94,6 +101,16 @@ electronAPI.onReady((event, { clientData, contact }) => {
 
     statusList.appendChild(clientBox);
 
+    // Agregar evento para desloguear
+    clientBox.querySelector(".logout-btn").addEventListener("click", async (event) => {
+        const phoneNumber = event.target.getAttribute("data-phone");
+
+        const response = await electronAPI.logoutSingleClient(phoneNumber);
+
+        alert(response);
+
+        clientBox.remove();
+    });
 });
 
 electronAPI.onFinishedSendingMessage(() => {

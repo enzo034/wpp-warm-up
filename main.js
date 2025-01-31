@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path')
-const { initializeClients, logoutAllClients } = require('./whatsapp.js')
+const { initializeClients, logoutAllClients, addClient, logoutClient } = require('./whatsapp.js')
 
 let mainWindow;
 
@@ -22,12 +22,28 @@ app.whenReady().then(() => {
     createWindow()
 
     ipcMain.handle('initialize-clients', async (event, clientCount, hoursSending, minTime, maxRandTime) => {
-        const initClients = await initializeClients(clientCount, mainWindow, hoursSending, minTime, maxRandTime);
+        try {
+            await initializeClients(clientCount, mainWindow, hoursSending, minTime, maxRandTime);
+            return 'Clientes inicializados, el envío de mensajes va a comenzar';
+        } catch (error) {
+            console.log(error);
+            return `Error al inicializar clientes: ${error.message}`;
+        }
+    });
+    
+    ipcMain.handle('add-single-client', async (event) => {
+        try {
+            await addClient(mainWindow);
+            return 'Cliente inicializado y agregado correctamente';
+        } catch (error) {
+            console.log(error);
+            return `Error al agregar cliente: ${error.message}`;
+        }
+    });
 
-        if (!initClients) return 'Los clientes no fueron inicializados, revise los parametros de inicio.'
-        if (typeof (initClients) === 'string') return initClients;
-
-        return 'Clientes inicializados, el envio de mensajes va a comenzar';
+    ipcMain.handle('logout-single-client', async (event, phoneNumber) => {
+        await logoutClient(phoneNumber);
+        return `Cliente con número ${phoneNumber} eliminado.`
     });
 
     ipcMain.handle('logout-clients', async () => {

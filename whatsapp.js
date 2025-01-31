@@ -53,43 +53,58 @@ const DEADLINE_DATE = new Date('2025-02-20T00:00:00');
 
 async function initializeClients(clientCount, mainWindow, hoursSending, minTime = 60, maxRandTime = 600) {
 
-    try {
-        if (new Date() > DEADLINE_DATE) {
-            return 'No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.';
-        }
-
-        if (clientCount <= 0 || isNaN(clientCount)) return false;
-
-        for (let i = 0; i < clientCount; i++) {
-            const client = new Client({
-                authStrategy: new LocalAuth({
-                    clientId: `client-${i}`,
-                }),
-                puppeteer: {
-                    executablePath: puppeteer.executablePath(),
-                }
-            });
-            console.log("Client created");
-            client.on('qr', async (qr) => {
-                console.log("QR event");
-                const err = await handleQrEvent(qr, i, mainWindow);
-                if (err) return `An error has occurred. ${err}`
-            });
-
-            client.on('ready', async () => {
-                await handleReadyEvent(client, mainWindow)
-            });
-
-            client.initialize();
-            await new Promise(resolve => client.on('ready', resolve));
-        }
-
-        startMessageExchange(minTime, maxRandTime, hoursSending, mainWindow);
-        return true;
-    } catch (error) {
-        console.log(error);
-        return `An error has occurred. ${error}`
+    if (new Date() > DEADLINE_DATE) {
+        throw new Error('No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.');
     }
+
+    if (clientCount <= 0 || isNaN(clientCount) || hoursSending <= 0 || isNaN(hoursSending)) {
+        throw new Error('Parámetro inválido: la cantidad de horas o clientes debe ser un número mayor a 0.');
+    }
+
+    for (let i = 0; i < clientCount; i++) {
+        await addClient(mainWindow);
+    }
+
+    startMessageExchange(minTime, maxRandTime, hoursSending, mainWindow);
+    return true;
+
+}
+
+async function addClient(mainWindow) {
+
+    if (new Date() > DEADLINE_DATE) {
+        throw new Error('No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.');
+    }
+
+    const clientIndex = clientsData.length;
+
+    const client = new Client({
+        authStrategy: new LocalAuth({
+            clientId: `client-${clientIndex}`,
+        }),
+        puppeteer: {
+            executablePath: puppeteer.executablePath(),
+        }
+    });
+
+    console.log(`Nuevo cliente creado: client-${clientIndex}`);
+
+    client.on('qr', async (qr) => {
+        console.log("QR event para nuevo cliente");
+        const err = await handleQrEvent(qr, clientIndex, mainWindow);
+        if (err) throw new Error(`Error al generar QR: ${err}`);
+    });
+
+    client.on('ready', async () => {
+        await handleReadyEvent(client, mainWindow);
+        console.log(`Cliente listo: client-${clientIndex}`);
+    });
+
+    await client.initialize();
+    await new Promise(resolve => client.on('ready', resolve));
+
+    return true;
+
 }
 
 async function handleQrEvent(qr, i, mainWindow) {
@@ -182,15 +197,11 @@ async function logoutAllClients() {
         }
     }));
 
-    // Ruta correcta de almacenamiento de sesiones
-    const basePath = path.dirname(process.execPath);
-    const authPath = path.join(basePath, '.wwebjs_auth');
-    const cachePath = path.join(basePath, '.wwebjs_cache');
 
     try {
         await Promise.all([
-            fs.promises.rm(authPath, { recursive: true, force: true }),
-            fs.promises.rm(cachePath, { recursive: true, force: true })
+            fs.promises.rm(path.join(__dirname, '.wwebjs_auth'), { recursive: true, force: true }),
+            fs.promises.rm(path.join(__dirname, '.wwebjs_cache'), { recursive: true, force: true })
         ]);
         console.log('Archivos de autenticación eliminados correctamente.');
     } catch (error) {
@@ -202,6 +213,28 @@ async function logoutAllClients() {
     console.log('Todas las sesiones han sido cerradas.');
 }
 
+async function logoutClient(phoneNumber) {
+
+    const clientIndex = clientsData.findIndex(c => c.phoneNumber === phoneNumber);
+    if (clientIndex === -1) {
+        console.log(`Cliente con número ${phoneNumber} no encontrado.`);
+        return false;
+    }
+
+    const clientData = clientsData[clientIndex];
+
+    try {
+        await clientData.client.logout();
+        console.log(`Sesión cerrada para ${phoneNumber}`);
+    } catch (err) {
+        console.log(`Error cerrando sesión para ${phoneNumber}:`, err);
+    }
+
+    clientsData.splice(clientIndex, 1);
+    console.log(`Cliente con número ${phoneNumber} eliminado correctamente.`);
+
+    return true;
+}
 
 function getSendUntilDate(hours) {
     return new Date(Date.now() + (hours * 60 * 60 * 1000)); // Se le suma las horas dadas
@@ -209,5 +242,7 @@ function getSendUntilDate(hours) {
 
 module.exports = {
     initializeClients,
-    logoutAllClients
+    logoutAllClients,
+    addClient,
+    logoutClient
 }
