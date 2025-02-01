@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path')
-const { initializeClients, logoutAllClients, addClient, logoutClient } = require('./whatsapp.js')
+const { initializeClients, logoutAllClients, addClient, logoutClient, startMessageExchange } = require('./whatsapp.js')
 
 let mainWindow;
 
@@ -31,6 +31,16 @@ app.whenReady().then(() => {
         }
     });
     
+    ipcMain.handle('start-sending-messages', async (event, minTime, maxRandTime, hoursSending) => {
+        try {
+            await startMessageExchange(minTime, maxRandTime, hoursSending, mainWindow);
+            return 'El envío de mensajes va a comenzar';
+        } catch (error) {
+            console.log(error);
+            return `Error al enviar mensajes: ${error.message}`;
+        }
+    });
+
     ipcMain.handle('add-single-client', async (event) => {
         try {
             await addClient(mainWindow);

@@ -1,10 +1,11 @@
 const startButton = document.getElementById('start-clients');
+const startSendingMessagesButton = document.getElementById('start-sending-messages');
 const addClientButton = document.getElementById('add-client');
 const logoutButton = document.getElementById('logout-clients');
 const qrContainer = document.getElementById('qr-container');
 const statusList = document.getElementById("status-list");
 
-window.alert = function(str) {
+window.alert = function (str) {
     window.electronAPI.showAlert(str).then(() => {
         if (document.activeElement && (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA")) {
             document.activeElement.focus();
@@ -18,11 +19,7 @@ startButton.addEventListener('click', async () => {
     let maxRandTime = parseInt(document.getElementById('max-delay').value);
     let hoursSending = parseInt(document.getElementById('hours-sending').value);
 
-    // Para que los tome como undefined en lugar de NaN
-    minTime = isNaN(minTime) ? undefined : minTime;
-    maxRandTime = isNaN(maxRandTime) ? undefined : maxRandTime;
-
-    const validation = validateWarmUpParameters(clientCount, minTime, maxRandTime, hoursSending);
+    const validation = validateWarmUpParameters(minTime, maxRandTime, hoursSending, clientCount);
     if (!validation) {
         alert('Asegurese de que todos los parametros estén correctos antes de comenzar.');
         return;
@@ -37,6 +34,21 @@ startButton.addEventListener('click', async () => {
     const result = await electronAPI.initializeClients(clientCount, hoursSending, minTime, maxRandTime);
     alert(result);
 });
+
+startSendingMessagesButton.addEventListener('click', async () => {
+    let minTime = parseInt(document.getElementById('min-delay').value);
+    let maxRandTime = parseInt(document.getElementById('max-delay').value);
+    let hoursSending = parseInt(document.getElementById('hours-sending').value);
+
+    const validation = validateSendMessagesParameters(minTime, maxRandTime, hoursSending);
+    if (!validation) {
+        alert('Asegurese de que todos los parametros estén correctos antes de comenzar.');
+        return;
+    }
+
+    const result = await electronAPI.startSendingMessages(minTime, maxRandTime, hoursSending);
+    alert(result);
+})
 
 addClientButton.addEventListener('click', async () => {
     const result = await electronAPI.addSingleClient();
@@ -153,9 +165,14 @@ function deleteQrChilds() {
     }
 }
 
-function validateWarmUpParameters(clientCount, minTime, maxRandTime, hoursSending) {
+function validateWarmUpParameters(minTime, maxRandTime, hoursSending, clientCount) {
     if (isNaN(clientCount) || clientCount <= 0) {
         alert(`Por favor, ingrese un número válido de clientes`);
+        return false;
+    }
+
+    if (!minTime || !maxRandTime) {
+        alert(`Asegurese de ingresar valores en el intervalo`);
         return false;
     }
 
@@ -169,7 +186,32 @@ function validateWarmUpParameters(clientCount, minTime, maxRandTime, hoursSendin
         return false;
     }
 
-    if (hoursSending <= 0) {
+    if (!hoursSending || hoursSending <= 0) {
+        alert(`Por favor, ingrese un horario válido para el envio de mensajes`);
+        return false;
+    }
+
+    return true;
+}
+
+function validateSendMessagesParameters(minTime, maxRandTime, hoursSending) {
+
+    if (!minTime || !maxRandTime) {
+        alert(`Asegurese de ingresar valores en el intervalo`);
+        return false;
+    }
+
+    if (minTime < 0 || maxRandTime < 0) {
+        alert(`Por favor, ingrese intervalos válidos`);
+        return false;
+    }
+
+    if (minTime > maxRandTime) {
+        alert(`Por favor, ingrese un numero de intervalo minimo menor al intervalo máximo`);
+        return false;
+    }
+
+    if (!hoursSending || hoursSending <= 0) {
         alert(`Por favor, ingrese un horario válido para el envio de mensajes`);
         return false;
     }

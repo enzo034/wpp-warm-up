@@ -19,7 +19,7 @@ let clientsData = [];
 
 const DEADLINE_DATE = new Date('2025-02-25T00:00:00');
 
-async function initializeClients(clientCount, mainWindow, hoursSending, minTime = 60, maxRandTime = 600) {
+async function initializeClients(clientCount, mainWindow, hoursSending, minTime, maxRandTime) {
 
     if (new Date() > DEADLINE_DATE) {
         throw new Error('No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.');
@@ -52,6 +52,7 @@ async function addClient(mainWindow) {
         }),
         puppeteer: {
             executablePath: puppeteer.executablePath(),
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         }
     });
 
@@ -105,6 +106,8 @@ async function handleReadyEvent(client, mainWindow) {
 }
 
 async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending, mainWindow) { //En segundos
+
+    if(clientsData <= 1) throw new Error('La cantidad de clientes escaneados debe ser mayor a uno.')
 
     const sendUntil = getSendUntilDate(hoursSending);
 
@@ -212,5 +215,6 @@ module.exports = {
     initializeClients,
     logoutAllClients,
     addClient,
-    logoutClient
+    logoutClient,
+    startMessageExchange
 }

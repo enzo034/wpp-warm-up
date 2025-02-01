@@ -121,24 +121,12 @@ input:focus {
     position: relative;
 }
 
-#add-client {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-#start-clients {
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
 /* Posicionamiento de los inputs debajo del botón "Iniciar Clientes" */
 .inputs-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 60px;
+    margin-top: 20px;
 }
 
 /* Alineación del botón "Cerrar Sesiones" en la parte inferior derecha */
@@ -264,9 +252,9 @@ input:focus {
 }
 
 .qr-wrapper img {
-    width: 200px;
+    width: 500px;
     /* Ajusta el tamaño de la imagen QR */
-    height: auto;
+    height: 500px;
     border-radius: 5px;
 }
 

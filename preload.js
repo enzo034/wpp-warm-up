@@ -4,6 +4,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     initializeClients: (clientCount, hoursSending, minTime, maxRandTime) => ipcRenderer.invoke('initialize-clients', clientCount, hoursSending, minTime, maxRandTime),
 
+    startSendingMessages: (minTime, maxRandTime, hoursSending) => ipcRenderer.invoke('start-sending-messages', minTime, maxRandTime, hoursSending),
+
     addSingleClient: () => ipcRenderer.invoke('add-single-client'),
 
     logoutSingleClient: (phoneNumber) => ipcRenderer.invoke('logout-single-client', phoneNumber),
