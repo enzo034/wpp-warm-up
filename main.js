@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path')
-const { initializeClients, logoutAllClients, addClient, logoutClient, startMessageExchange } = require('./whatsapp.js')
+const { initializeClients, logoutAllClients, addClient, logoutClient, startMessageExchange, stopMessageExchange } = require('./whatsapp.js')
 
 let mainWindow;
 
@@ -41,6 +41,11 @@ app.whenReady().then(() => {
         }
     });
 
+    ipcMain.handle('stop-sending-messages', async () => {
+        stopMessageExchange();
+        return 'Deteniendo el envío de mensajes...';
+    });
+
     ipcMain.handle('add-single-client', async (event) => {
         try {
             await addClient(mainWindow);
@@ -52,8 +57,13 @@ app.whenReady().then(() => {
     });
 
     ipcMain.handle('logout-single-client', async (event, phoneNumber) => {
-        await logoutClient(phoneNumber);
-        return `Cliente con número ${phoneNumber} eliminado.`
+        try {
+            await logoutClient(phoneNumber);
+            return `Cliente con número ${phoneNumber} eliminado.`
+        } catch (error) {
+            console.log(error);
+            return `Error al cerrar la sesión del cliente con número ${phoneNumber} : ${error.message}`;
+        }
     });
 
     ipcMain.handle('logout-clients', async () => {

@@ -43,11 +43,18 @@
       </div>
 
       <div id="qr-container">
-      
+
       </div>
 
     </div>
 
+    <div class="input-group logout-field">
+      <label for="logout-client-number">Número de cliente a desconectar</label>
+      <input type="text" id="logout-client-number" placeholder="Número"/>
+      <button id="logout-client-button">Desconectar</button>
+    </div>
+
+    <button id="stop-sending-messages">Detener Envío de Mensajes</button>
     <button id="logout-clients">Cerrar Sesiones</button>
   </main>
 
@@ -56,6 +63,8 @@
     <h2>Clientes Conectados</h2>
     <div id="status-list"></div>
   </aside>
+
+  <div id="toast" class="hidden">📋 Número copiado</div>
 
   <script src="./scripts/renderer.js"></script>
 </body>

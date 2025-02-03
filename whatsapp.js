@@ -9,13 +9,14 @@ const { randomWordsFromJs } = require('./randomWords.js');
 
 const logStream = fs.createWriteStream('app.log', { flags: 'a' });
 
-console.log = function (message) {
+/* console.log = function (message) {
     logStream.write(new Date().toISOString() + ' - ' + message + '\n');
-};
+}; */
 
 
 const randomWords = randomWordsFromJs
 let clientsData = [];
+let shouldStopSending = false;
 
 const DEADLINE_DATE = new Date('2025-02-25T00:00:00');
 
@@ -77,7 +78,6 @@ async function addClient(mainWindow) {
 }
 
 async function handleQrEvent(qr, i, mainWindow) {
-    console.log("Inside qr handler event");
     return new Promise((resolve, reject) => {
         qrcode.toDataURL(qr, (err, url) => {
             if (err) {
@@ -110,9 +110,12 @@ async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending, mainW
     if(clientsData <= 1) throw new Error('La cantidad de clientes escaneados debe ser mayor a uno.')
 
     const sendUntil = getSendUntilDate(hoursSending);
+    shouldStopSending = false;
 
-    while (true) {
+    while (!shouldStopSending) {
         for (const sender of clientsData) {
+
+            if (shouldStopSending) break;
 
             if (Date.now() > sendUntil.getTime()) {
                 mainWindow.webContents.send('onFinishedSendingMessage');
@@ -144,6 +147,10 @@ async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending, mainW
             await new Promise((resolve) => setTimeout(resolve, interval));
         }
     }
+}
+
+function stopMessageExchange() {
+    shouldStopSending = true;
 }
 
 function getRandomRecipient(senderPhoneNumber) {
@@ -185,7 +192,7 @@ async function logoutAllClients() {
 }
 
 async function logoutClient(phoneNumber) {
-
+    console.log("object");
     const clientIndex = clientsData.findIndex(c => c.phoneNumber === phoneNumber);
     if (clientIndex === -1) {
         console.log(`Cliente con número ${phoneNumber} no encontrado.`);
@@ -216,5 +223,6 @@ module.exports = {
     logoutAllClients,
     addClient,
     logoutClient,
-    startMessageExchange
+    startMessageExchange,
+    stopMessageExchange
 }

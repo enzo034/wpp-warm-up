@@ -1,7 +1,9 @@
 const startButton = document.getElementById('start-clients');
 const startSendingMessagesButton = document.getElementById('start-sending-messages');
+const stopSendingMessagesButton = document.getElementById('stop-sending-messages');
 const addClientButton = document.getElementById('add-client');
 const logoutButton = document.getElementById('logout-clients');
+const logoutClientButton = document.getElementById('logout-client-button');
 const qrContainer = document.getElementById('qr-container');
 const statusList = document.getElementById("status-list");
 
@@ -48,7 +50,7 @@ startSendingMessagesButton.addEventListener('click', async () => {
 
     const result = await electronAPI.startSendingMessages(minTime, maxRandTime, hoursSending);
     alert(result);
-})
+});
 
 addClientButton.addEventListener('click', async () => {
     const result = await electronAPI.addSingleClient();
@@ -65,6 +67,38 @@ logoutButton.addEventListener('click', async () => {
     alert(result);
 });
 
+logoutClientButton.addEventListener('click', async () => {
+
+    const logoutClientInput = document.getElementById('logout-client-number');
+    const phoneNumber = logoutClientInput.value.trim();
+    logoutClientInput.value = '';
+
+    if (phoneNumber.length > 0) {
+        let found = false;
+
+        for (const child of statusList.childNodes) {
+            if (child.innerText.includes(phoneNumber)) {
+                found = true;
+                const response = await electronAPI.logoutSingleClient(phoneNumber);
+                child.remove();
+                alert(response);
+                break;
+            }
+        }
+
+        if (!found) {
+            alert(`El número ${phoneNumber} no fue encontrado.`);
+        }
+    } else {
+        alert("Por favor, ingrese un número válido.");
+    }
+
+});
+
+stopSendingMessagesButton.addEventListener('click', async () => {
+    const result = await electronAPI.stopSendingMessages();
+    alert(result);
+});
 
 //! Electron Events
 electronAPI.onQRGenerated((event, { qr, clientIndex }) => {
@@ -103,7 +137,6 @@ electronAPI.onReady((event, { clientData, contact }) => {
     clientBox.innerHTML = `
         <div class="client-header">
             <strong>${clientData.phoneNumber} - ${clientData.isReady ? "Conectado" : "Desconectado"}</strong>
-            <button class="logout-btn" data-phone="${clientData.phoneNumber}">❌</button>
         </div>
         <small>📅 Primer escaneo: ${formatDate(contact.firstScan)}</small><br>
         <small>⏳ Último escaneo: ${formatDate(contact.lastScan)}</small><br>
@@ -111,18 +144,13 @@ electronAPI.onReady((event, { clientData, contact }) => {
         <small>✉️ Mensajes recibidos: ${contact.messagesReceived}</small>
     `;
 
-    statusList.appendChild(clientBox);
-
-    // Agregar evento para desloguear
-    clientBox.querySelector(".logout-btn").addEventListener("click", async (event) => {
-        const phoneNumber = event.target.getAttribute("data-phone");
-
-        const response = await electronAPI.logoutSingleClient(phoneNumber);
-
-        alert(response);
-
-        clientBox.remove();
+    clientBox.addEventListener("click", () => {
+        navigator.clipboard.writeText(clientData.phoneNumber)
+            .then(() => showToast())
+            .catch(err => console.error("Error al copiar: ", err));
     });
+
+    statusList.appendChild(clientBox);
 });
 
 electronAPI.onFinishedSendingMessage(() => {
@@ -217,5 +245,11 @@ function validateSendMessagesParameters(minTime, maxRandTime, hoursSending) {
     }
 
     return true;
+}
+
+function showToast() {
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
 }
 //! End helpers

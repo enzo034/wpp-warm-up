@@ -143,6 +143,32 @@ input:focus {
     /* Rojo más oscuro */
 }
 
+.logout-field {
+    position: absolute;
+    top: 20px;
+    right: 300px;
+}
+
+#logout-client-button {
+    background-color: #e74c3c;
+}
+
+#logout-client-button:hover {
+    background-color: #c0392b;
+    /* Rojo más oscuro */
+}
+
+#stop-sending-messages {
+    position: absolute;
+    bottom: 20px;
+    right: 460px;
+    background-color: #e74c3c;
+}
+
+#stop-sending-messages:hover {
+    background-color: #c0392b;
+}
+
 /* Contenedor de estados de clientes */
 #status-container {
     width: 250px;
@@ -331,16 +357,24 @@ input:focus {
     align-items: center;
 }
 
-.logout-btn {
-    background: none;
-    border: none;
-    color: red;
-    font-size: 0.5rem;
-    cursor: pointer;
-    transition: color 0.2s;
+#toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.5s, bottom 0.5s;
 }
-.logout-btn:hover {
-    color: darkred;
-    /* transform: scale(1.1); */
+#toast.show {
+    opacity: 1;
+    bottom: 30px;
 }
 
+.client-box {
+    cursor: pointer;
+}
