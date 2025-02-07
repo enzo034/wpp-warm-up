@@ -158,6 +158,14 @@ input:focus {
     /* Rojo más oscuro */
 }
 
+#add-receiver-button {
+    background-color: #09c003;
+}
+
+#add-receiver-button:hover {
+    background-color: #1e7915;
+}
+
 #stop-sending-messages {
     position: absolute;
     bottom: 20px;
@@ -377,4 +385,10 @@ input:focus {
 
 .client-box {
     cursor: pointer;
+}
+
+
+.client-box.cannot-send {
+    background-color: rgba(26, 109, 33, 0.37);
+    border-width: 3px;
 }

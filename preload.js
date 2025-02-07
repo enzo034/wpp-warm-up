@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     addSingleClient: () => ipcRenderer.invoke('add-single-client'),
 
+    addReceivingOnlyClient: (phoneNumber) => ipcRenderer.invoke('add-receiving-only-client', phoneNumber),
+
     logoutSingleClient: (phoneNumber) => ipcRenderer.invoke('logout-single-client', phoneNumber),
 
     onQRGenerated: (callback) => ipcRenderer.on('qr', callback),

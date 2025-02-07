@@ -30,7 +30,7 @@ async function ensureDbLoaded() {
     });
 }
 
-async function checkContact(phoneNumber) {
+async function checkContact(phoneNumber, canSend) {
 
     await ensureDbLoaded();
 
@@ -47,7 +47,8 @@ async function checkContact(phoneNumber) {
             firstScan: firstLastScan,
             lastScan: firstLastScan,
             messagesSent: 0,
-            messagesReceived: 0
+            messagesReceived: 0,
+            canSend
         });
 
     } else {
@@ -59,6 +60,15 @@ async function checkContact(phoneNumber) {
 
     return contact;
 }
+
+async function addSenderClient(phoneNumber) {
+    return await checkContact(phoneNumber, true);
+}
+
+async function addReceivingClient(phoneNumber) {
+    return await checkContact(phoneNumber, false);
+}
+
 
 async function updateMessages(phoneSender, phoneReceiver) {
     await ensureDbLoaded();
@@ -84,5 +94,7 @@ async function updateMessages(phoneSender, phoneReceiver) {
 module.exports = {
     db,
     checkContact,
-    updateMessages
+    updateMessages, 
+    addSenderClient,
+    addReceivingClient
 };

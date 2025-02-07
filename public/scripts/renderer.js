@@ -6,6 +6,8 @@ const logoutButton = document.getElementById('logout-clients');
 const logoutClientButton = document.getElementById('logout-client-button');
 const qrContainer = document.getElementById('qr-container');
 const statusList = document.getElementById("status-list");
+const addReceiverButton = document.getElementById('add-receiver-button');
+const logoutClientInput = document.getElementById('logout-client-number');
 
 window.alert = function (str) {
     window.electronAPI.showAlert(str).then(() => {
@@ -69,7 +71,6 @@ logoutButton.addEventListener('click', async () => {
 
 logoutClientButton.addEventListener('click', async () => {
 
-    const logoutClientInput = document.getElementById('logout-client-number');
     const phoneNumber = logoutClientInput.value.trim();
     logoutClientInput.value = '';
 
@@ -93,6 +94,18 @@ logoutClientButton.addEventListener('click', async () => {
         alert("Por favor, ingrese un número válido.");
     }
 
+});
+
+addReceiverButton.addEventListener('click', async () => {
+    const phoneNumber = logoutClientInput.value.trim();
+    logoutClientInput.value = '';
+
+    if (phoneNumber.length > 0) {
+        const response = await electronAPI.addReceivingOnlyClient(phoneNumber);
+        alert(response);
+    } else {
+        alert("Por favor, ingrese un número válido.");
+    }
 });
 
 stopSendingMessagesButton.addEventListener('click', async () => {
@@ -133,6 +146,12 @@ electronAPI.onReady((event, { clientData, contact }) => {
     const clientBox = document.createElement("div");
     clientBox.classList.add("client-box");
     clientBox.classList.add(clientData.isReady ? "ready" : "not-ready");
+
+    if (contact.canSend) {
+        clientBox.classList.add("can-send");
+    } else {
+        clientBox.classList.add("cannot-send");
+    }
 
     clientBox.innerHTML = `
         <div class="client-header">

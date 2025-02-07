@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('node:path')
-const { initializeClients, logoutAllClients, addClient, logoutClient, startMessageExchange, stopMessageExchange } = require('./whatsapp.js')
+const { initializeClients, logoutAllClients, addClient, logoutClient, startMessageExchange, stopMessageExchange, addReceivingOnlyClient } = require('./whatsapp.js')
 
 let mainWindow;
 
@@ -55,6 +55,17 @@ app.whenReady().then(() => {
             return `Error al agregar cliente: ${error.message}`;
         }
     });
+
+    ipcMain.handle('add-receiving-only-client', async (event, phoneNumber) => {
+        try {
+            const success = await addReceivingOnlyClient(phoneNumber, mainWindow);
+            return success ? `Cliente receptor ${phoneNumber} agregado correctamente.` : `El número ${phoneNumber} ya estaba registrado.`;
+        } catch (error) {
+            console.log(error);
+            return `Error al agregar cliente receptor: ${error.message}`;
+        }
+    });
+    
 
     ipcMain.handle('logout-single-client', async (event, phoneNumber) => {
         try {

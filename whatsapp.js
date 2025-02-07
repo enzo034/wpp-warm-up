@@ -2,7 +2,7 @@ const fs = require('fs');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const path = require('path');
-const { checkContact, updateMessages } = require('./data/database.js')
+const { checkContact, updateMessages, addSenderClient, addReceivingClient } = require('./data/database.js')
 const puppeteer = require('puppeteer');
 const { randomWordsFromJs } = require('./randomWords.js');
 
@@ -77,6 +77,35 @@ async function addClient(mainWindow) {
 
 }
 
+
+async function addReceivingOnlyClient(phoneNumber, mainWindow) {
+    if (!phoneNumber || typeof phoneNumber !== 'string') {
+        throw new Error('Número de teléfono inválido.');
+    }
+
+    const exists = clientsData.some(client => client.phoneNumber === phoneNumber);
+    if (exists) {
+        console.log(`El número ${phoneNumber} ya está registrado como cliente receptor.`);
+        return false;
+    }
+
+    const clientData = { phoneNumber, isReady: true, };
+
+    clientsData.push({
+        phoneNumber,
+        isReady: true,
+        canSend: false 
+    });
+
+    const contact = await addReceivingClient(phoneNumber);
+
+    console.log(`Cliente receptor añadido: ${phoneNumber}`);
+    
+    mainWindow.webContents.send('ready', { clientData, contact });
+    return true;
+}
+
+
 async function handleQrEvent(qr, i, mainWindow) {
     return new Promise((resolve, reject) => {
         qrcode.toDataURL(qr, (err, url) => {
@@ -100,14 +129,14 @@ async function handleReadyEvent(client, mainWindow) {
 
     clientsData.push({ client, phoneNumber, isReady: true, });
 
-    const contact = await checkContact(phoneNumber);
+    const contact = await addSenderClient(phoneNumber);
 
     mainWindow.webContents.send('ready', { clientData, contact });
 }
 
 async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending, mainWindow) { //En segundos
 
-    if(clientsData <= 1) throw new Error('La cantidad de clientes escaneados debe ser mayor a uno.')
+    if (clientsData.length <= 1) throw new Error('La cantidad de clientes escaneados debe ser mayor a uno.');
 
     const sendUntil = getSendUntilDate(hoursSending);
     shouldStopSending = false;
@@ -122,7 +151,7 @@ async function startMessageExchange(MIN_TIME, MAX_RAND_TIME, hoursSending, mainW
                 return;
             }
 
-            if (!sender.isReady) continue;
+            if (!sender.isReady || !sender.canSend) continue;
 
             const recipient = getRandomRecipient(sender.phoneNumber);
 
@@ -192,7 +221,7 @@ async function logoutAllClients() {
 }
 
 async function logoutClient(phoneNumber) {
-    console.log("object");
+
     const clientIndex = clientsData.findIndex(c => c.phoneNumber === phoneNumber);
     if (clientIndex === -1) {
         console.log(`Cliente con número ${phoneNumber} no encontrado.`);
@@ -224,5 +253,6 @@ module.exports = {
     addClient,
     logoutClient,
     startMessageExchange,
-    stopMessageExchange
+    stopMessageExchange,
+    addReceivingOnlyClient
 }
