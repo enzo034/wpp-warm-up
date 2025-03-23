@@ -6,13 +6,13 @@ const { checkContact, updateMessages, addSenderClient, addReceivingClient } = re
 const puppeteer = require('puppeteer');
 const { randomWordsFromJs } = require('./randomWords.js');
 
-
+/*
 const logStream = fs.createWriteStream('app.log', { flags: 'a' });
 
 console.log = function (message) {
     logStream.write(new Date().toISOString() + ' - ' + message + '\n');
 };
-
+*/
 
 const randomWords = randomWordsFromJs
 let clientsData = [];
