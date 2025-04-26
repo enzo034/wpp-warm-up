@@ -6,9 +6,11 @@ const { updateMessages, addSenderClient, addReceivingClient } = require('./data/
 const puppeteer = require('puppeteer');
 const { randomWordsFromJs } = require('./randomWords.js');
 
+
+/*
 const logStream = fs.createWriteStream('app.log', { flags: 'a' });
 
-/* console.log = function (message) {
+console.log = function (message) {
     logStream.write(new Date().toISOString() + ' - ' + message + '\n');
 }; */
 
@@ -16,13 +18,7 @@ const randomWords = randomWordsFromJs
 let clientsData = [];
 let shouldStopSending = false;
 
-const DEADLINE_DATE = new Date('2025-11-25T00:00:00');
-
 async function initializeClients(clientCount, mainWindow, hoursSending, minTime, maxRandTime) {
-
-    if (new Date() > DEADLINE_DATE) {
-        throw new Error('No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.');
-    }
 
     if (clientCount <= 0 || isNaN(clientCount) || hoursSending <= 0 || isNaN(hoursSending)) {
         throw new Error('Parámetro inválido: la cantidad de horas o clientes debe ser un número mayor a 0.');
@@ -39,10 +35,6 @@ async function initializeClients(clientCount, mainWindow, hoursSending, minTime,
 
 async function addClient(mainWindow) {
 
-    if (new Date() > DEADLINE_DATE) {
-        throw new Error('No se puede ejecutar: Fecha límite alcanzada. Consulte con el proveedor.');
-    }
-
     const clientIndex = clientsData.length;
 
     const client = new Client({
@@ -51,8 +43,7 @@ async function addClient(mainWindow) {
         }),
         puppeteer: {
             executablePath: puppeteer.executablePath(),
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: false
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         }
     });
 
